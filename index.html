@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ardagh Trails">
+<meta name="theme-color" content="#0f1a14">
+<title>Ardagh Bluffs Trails</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="map"></div>
+
+<header id="top">
+  <div class="search glass">
+    <svg class="ico" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+    <div class="ttl"><b>Ardagh Bluffs Trails</b><span>Barrie, Ontario</span></div>
+    <button id="btnFilter" class="sq" aria-label="Filter trails"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+    <button id="owlCard" class="owl" aria-label="Barred Owl"><img src="icons/owl.jpg" alt=""><span>Barred Owl</span><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
+  </div>
+  <div class="row2">
+    <button id="gpsPill" class="pill glass"><i class="dot"></i><span><b id="gpsTxt">GPS · tap to connect</b><small id="gpsAcc"></small></span></button>
+    <div id="navBanner" class="pill glass hidden"></div>
+  </div>
+</header>
+
+<div id="rightbar">
+  <button id="btnNorth" class="rb glass" aria-label="Reset north"><svg id="northIco" viewBox="0 0 24 24"><path d="M12 3 16 12H8z" fill="#ff3b30" stroke="none"/><path d="M12 21 8 12h8z" fill="#fff" stroke="none" opacity=".85"/></svg><em>N</em></button>
+  <button id="btnLayers" class="rb glass" aria-label="Layers"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></button>
+  <button id="btn3d" class="rb glass on" aria-label="3D"><b>3D</b></button>
+  <button id="btnLocate" class="rb glass" aria-label="Follow me"><svg viewBox="0 0 24 24"><path d="M20 4 4 11l7 2 2 7z" /></svg></button>
+</div>
+
+<div id="layersPop" class="pop glass hidden">
+  <label><input type="radio" name="base" value="sat" checked> Satellite</label>
+  <label><input type="radio" name="base" value="relief"> Shaded relief</label>
+  <hr>
+  <label><input type="checkbox" id="optLabels" checked> Street labels</label>
+  <label><input type="checkbox" id="optHill" checked> Hillshade</label>
+</div>
+
+<section id="sheet" class="sheet">
+  <div class="grab" id="grab"></div>
+  <div class="sh-head">
+    <div class="hiker"><svg viewBox="0 0 24 24"><circle cx="13" cy="4" r="2"/><path d="M11 8 9 14l3 2 1 5M11 8l3 3 3 1M9 14l-2 7M15 8l1 13"/></svg></div>
+    <div class="sh-t"><b>Dynamic Route Builder</b><span id="rbHint">Combine connected trails to create your own route</span></div>
+    <button id="btnEdit" class="edit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg><span>Edit Route</span></button>
+  </div>
+  <div class="stats">
+    <div><i class="si"><svg viewBox="0 0 24 24"><path d="M12 21s-6-6.2-6-11a6 6 0 1 1 12 0c0 4.8-6 11-6 11z"/><circle cx="12" cy="10" r="2"/></svg></i><b id="stDist">—</b><span>Distance</span></div>
+    <div><i class="si"><svg viewBox="0 0 24 24"><path d="m3 19 6-9 4 5 3-4 5 8z"/></svg></i><b id="stGain">—</b><span>Elevation Gain</span></div>
+    <div><i class="si"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></i><b id="stTime">—</b><span>Est. Time</span></div>
+    <div><i class="si diff"><svg viewBox="0 0 24 24"><path d="M6 18v-3M10 18v-6M14 18V9M18 18V6"/></svg></i><b id="stDiff">—</b><span>Difficulty</span></div>
+  </div>
+  <div class="acts">
+    <button id="btnStart" class="start" disabled><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="#fff" stroke="none"/></svg><span><b>Start Navigation</b><small id="startSub">Build a route first</small></span></button>
+    <button id="btnMore" class="more" aria-label="More route actions">•••</button>
+  </div>
+</section>
+
+<div id="moreMenu" class="pop glass hidden menu">
+  <button data-a="undo">Undo last point</button>
+  <button data-a="loop">Return to start (loop)</button>
+  <button data-a="reverse">Reverse route</button>
+  <button data-a="save">Save route…</button>
+  <button data-a="gpx">Export GPX</button>
+  <button data-a="clear" class="danger">Clear route</button>
+</div>
+
+<section id="panel" class="panel hidden"><div class="pn-head"><b id="pnTitle"></b><button id="pnClose" aria-label="Close">✕</button></div><div id="pnBody"></div></section>
+
+<nav id="tabs">
+  <button data-tab="map" class="on"><svg viewBox="0 0 24 24"><path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Map</button>
+  <button data-tab="trails"><svg viewBox="0 0 24 24"><circle cx="13" cy="4" r="2"/><path d="M11 8 9 14l3 2 1 5M11 8l3 3 3 1M9 14l-2 7"/></svg>Trails</button>
+  <button data-tab="saved"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>Saved</button>
+  <button data-tab="more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>More</button>
+</nav>
+
+<div id="toast" class="toast hidden"></div>
+<div id="dialog" class="dialog hidden"><div class="dlg glass"><p id="dlgText"></p><input id="dlgInput" class="hidden"><div class="dlg-b"><button id="dlgNo">Cancel</button><button id="dlgYes" class="yes">OK</button></div></div></div>
+
+<script src="vendor/maplibre-gl.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
